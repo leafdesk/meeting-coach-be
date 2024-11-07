@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int             @id @default(autoincrement())
+  name          String
+  voiceUrl      String          @map("voice_url")
+  voiceAnalysis VoiceAnalysis[]
+  faceAnalysis  FaceAnalysis[]
+
+  @@map("user")
+}
+
+model MeetingInfo {
+  id              Int             @id @default(autoincrement())
+  title           String
+  meetingDate     DateTime
+  videoUrl        String          @map("video_url")
+  summary         String
+  participantList String          @map("participant_list")
+  quizzes         Quiz[]
+  voiceAnalysis   VoiceAnalysis[]
+  faceAnalysis    FaceAnalysis[]
+
+  @@map("meeting_info")
+}
+
+model Quiz {
+  id                   Int         @id @default(autoincrement())
+  meetingInfo          MeetingInfo @relation(fields: [meetingInfoMeetingId], references: [id])
+  meetingInfoMeetingId Int         @map("meeting_info_meeting_id")
+  question             String
+  option               String
+  correctAnswer        Int         @map("correct_answer")
+
+  @@map("quiz")
+}
+
+model VoiceAnalysis {
+  meetingId      Int         @map("meeting_id")
+  userId         Int         @map("user_id")
+  voiceEmotion   String
+  interruptCount Int
+  meetingInfo    MeetingInfo @relation(fields: [meetingId], references: [id])
+  user           User        @relation(fields: [userId], references: [id])
+
+  @@id([meetingId, userId])
+  @@map("voice_analysis")
+}
+
+model FaceAnalysis {
+  meetingInfoMeetingId Int         @map("meeting_info_meeting_id")
+  userId               Int         @map("user_userID")
+  faceEmotion          String
+  meetingInfo          MeetingInfo @relation(fields: [meetingInfoMeetingId], references: [id])
+  user                 User        @relation(fields: [userId], references: [id])
+
+  @@id([meetingInfoMeetingId, userId])
+  @@map("face_analysis")
+}
