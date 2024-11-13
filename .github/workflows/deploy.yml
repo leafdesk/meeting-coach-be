@@ -3,7 +3,7 @@ name: Deploy to AWS
 on:
   push:
     branches:
-      - main  # main 브랜치에 푸시될 때만 실행
+      - main # main 브랜치에 푸시될 때만 실행
 
 jobs:
   deploy:
@@ -24,5 +24,5 @@ jobs:
           cd /home/ubuntu/meeting-coach-be
           git pull origin main
           pnpm install
-          pm2 restart server.js --name meeting-coach-be
+          pm2 startOrRestart src/server.js --name meeting-coach-be --update-env
           EOF
