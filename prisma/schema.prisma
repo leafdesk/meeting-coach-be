@@ -13,57 +13,78 @@ datasource db {
 model User {
   id            Int             @id @default(autoincrement())
   name          String
-  voiceUrl      String          @map("voice_url")
-  voiceAnalysis VoiceAnalysis[]
-  faceAnalysis  FaceAnalysis[]
+  department    String? // Nullable field
+  voiceUrl      String?         @map("voice_url")
+  participants  Participants[]
+  voiceEmotion  VoiceEmotion[]
+  facialEmotion FacialEmotion[]
 
   @@map("user")
 }
 
-model MeetingInfo {
-  id              Int             @id @default(autoincrement())
-  title           String
-  meetingDate     DateTime
-  videoUrl        String          @map("video_url")
-  summary         String
-  participantList String          @map("participant_list")
-  quizzes         Quiz[]
-  voiceAnalysis   VoiceAnalysis[]
-  faceAnalysis    FaceAnalysis[]
+model Meeting {
+  id            Int             @id @default(autoincrement())
+  title         String
+  organizer     String
+  filePath      String?         @map("file_path") // Nullable field
+  summary       String?
+  participants  Participants[]
+  quizzes       Quiz[]
+  voiceEmotion  VoiceEmotion[]
+  facialEmotion FacialEmotion[]
 
-  @@map("meeting_info")
+  @@map("meeting")
+}
+
+model Participants {
+  meetingId Int     @map("meeting_id")
+  userId    Int     @map("user_id")
+  meeting   Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([meetingId, userId]) // Composite primary key
+  @@map("participants")
 }
 
 model Quiz {
-  id                   Int         @id @default(autoincrement())
-  meetingInfo          MeetingInfo @relation(fields: [meetingInfoMeetingId], references: [id])
-  meetingInfoMeetingId Int         @map("meeting_info_meeting_id")
-  question             String
-  option               String
-  correctAnswer        Int         @map("correct_answer")
+  id                 Int     @id @default(autoincrement())
+  meetingId          Int     @map("meeting_id")
+  question           String
+  options            String // Stored as JSON or delimited list
+  answer             String
+  hallucinationScore Float?  @map("hallucination_score") // Nullable field
+  meeting            Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
   @@map("quiz")
 }
 
-model VoiceAnalysis {
-  meetingId      Int         @map("meeting_id")
-  userId         Int         @map("user_id")
-  voiceEmotion   String
-  interruptCount Int
-  meetingInfo    MeetingInfo @relation(fields: [meetingId], references: [id])
-  user           User        @relation(fields: [userId], references: [id])
+model VoiceEmotion {
+  userId            Int     @map("user_id")
+  meetingId         Int     @map("meeting_id")
+  angry             Float   @default(0)
+  sad               Float   @default(0)
+  neutral           Float   @default(0)
+  happy             Float   @default(0)
+  interruptionCount Int     @default(0) @map("interruption_count")
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meeting           Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
-  @@id([meetingId, userId])
-  @@map("voice_analysis")
+  @@id([userId, meetingId]) // Composite primary key
+  @@map("voice_emotion")
 }
 
-model FaceAnalysis {
-  meetingInfoMeetingId Int         @map("meeting_info_meeting_id")
-  userId               Int         @map("user_userID")
-  faceEmotion          String
-  meetingInfo          MeetingInfo @relation(fields: [meetingInfoMeetingId], references: [id])
-  user                 User        @relation(fields: [userId], references: [id])
+model FacialEmotion {
+  userId    Int     @map("user_id")
+  meetingId Int     @map("meeting_id")
+  sad       Float   @default(0)
+  happy     Float   @default(0)
+  angry     Float   @default(0)
+  fear      Float   @default(0)
+  disgust   Float   @default(0)
+  neutral   Float   @default(0)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meeting   Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
-  @@id([meetingInfoMeetingId, userId])
-  @@map("face_analysis")
+  @@id([userId, meetingId]) // Composite primary key
+  @@map("facial_emotion")
 }
