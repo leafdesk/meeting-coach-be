@@ -3,7 +3,7 @@ name: Deploy to AWS
 on:
   push:
     branches:
-      - main # main 브랜치에 푸시될 때만 실행
+      - main
 
 jobs:
   deploy:
@@ -15,14 +15,14 @@ jobs:
 
       - name: Create PEM file
         run: |
-          echo "${{ secrets.VMC_PEM_KEY }}" > ./meeting_coach_key.pem
-          chmod 400 ./meeting_coach_key.pem
+          echo "${{ secrets.TEMP_PEM }}" > ./temp.pem
+          chmod 400 ./temp.pem
 
       - name: Deploy to AWS Server
         run: |
-          ssh -o StrictHostKeyChecking=no -i ./meeting_coach_key.pem ubuntu@3.38.135.174 << 'EOF'
-          cd /home/ubuntu/meeting-coach-be
+          ssh -o StrictHostKeyChecking=no -i ./temp.pem ubuntu@43.200.254.240 << 'EOF'
+          cd /home/ubuntu/nodejs
           git pull origin main
           pnpm install
-          pm2 start meeting-coach-be
+          pm2 start nodejs
           EOF

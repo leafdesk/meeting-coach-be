@@ -1,18 +1,17 @@
 module.exports = {
   apps: [
     {
-      name: 'meeting-coach-be',
+      name: 'nodejs',
       script: 'src/server.js',
-      // 기타 설정...
     },
   ],
   deploy: {
     production: {
       user: 'ubuntu',
-      host: '43.203.122.230',
+      host: '43.200.254.240',
       ref: 'origin/main',
-      repo: 'git@github.com:leafdesk/meeting-coach-be.git',
-      path: '/home/ubuntu/meeting-coach-be',
+      repo: 'git@github.com:leafdesk/nodejs.git',
+      path: '/home/ubuntu/nodejs',
       'post-deploy':
         'pnpm install && pm2 startOrRestart ecosystem.config.cjs --env production',
     },
