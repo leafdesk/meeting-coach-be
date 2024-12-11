@@ -1,15 +1,12 @@
 import express from 'express'
-import infoRoutes from './routes/info.js'
-import feedbackRoutes from './routes/feedback.js'
-import quizRoutes from './routes/quiz.js'
+import healthCheckRoutes from './routes/healthcheck.js'
 
 const app = express()
 const PORT = 3000
 
 // Use routes
-app.use('/api/info', infoRoutes)
-app.use('/api/feedback', feedbackRoutes)
-app.use('/api/quiz', quizRoutes)
+
+app.use('/api/healthcheck', healthCheckRoutes)
 
 // 서버 시작
 app.listen(PORT, '0.0.0.0', () => {
