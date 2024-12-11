@@ -3,7 +3,7 @@ import express from 'express'
 const router = express.Router()
 
 /**
- * @GET /api/healthcheck
+ * @GET /nodejs/healthcheck
  */
 router.get('/', (req, res) => {
   res.json({ message: 'OK' })

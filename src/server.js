@@ -6,7 +6,7 @@ const PORT = 3000
 
 // Use routes
 
-app.use('/api/healthcheck', healthCheckRoutes)
+app.use('/nodejs/healthcheck', healthCheckRoutes)
 
 // 서버 시작
 app.listen(PORT, '0.0.0.0', () => {
